@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from models import Book, Member
+from infrastructure.models import Book, Member
 from uuid import UUID
 from datetime import datetime, timezone
 

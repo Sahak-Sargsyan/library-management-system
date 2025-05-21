@@ -17,8 +17,8 @@ class BookService:
         return book
     
     def create_book(self, new_book: schemas.BookCreate):
-        new_book=models.Book(title=new_book.title, author=new_book.author)
-        return self.repository.create_book(new_book)
+        new_book_to_add=models.Book(title=new_book.title, author=new_book.author)
+        return self.repository.create_book(new_book_to_add)
     
     def delete_book_by_id(self, book_id: int):
         self.repository.delete_book_by_id(book_id)
