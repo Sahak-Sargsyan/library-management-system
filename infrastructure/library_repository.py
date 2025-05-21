@@ -80,7 +80,7 @@ class LibraryRepository:
         book = self.db.query(Member).filter(Member.id == member_id).first()
         return book
     
-    def get_all_member(self):
+    def get_all_members(self):
         return self.db.query(Member).all()
     
     def update_member(self, member_id: UUID, updated_member: Book):
@@ -94,7 +94,7 @@ class LibraryRepository:
         self.db.refresh(updated_member)
         return updated_member
 
-    def delete_book_by_id(self, member_id: UUID):
+    def delete_member_by_id(self, member_id: UUID):
         member_to_delete = self.db.query(Member).filter(Member.id == member_id).first()
 
         #TODO add existense check
