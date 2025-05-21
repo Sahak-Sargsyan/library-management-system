@@ -6,7 +6,7 @@ DB_URL = "postgresql://postgres:password123@localhost/library"
 
 engine = create_engine(DB_URL)
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine )
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 

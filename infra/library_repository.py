@@ -1,0 +1,103 @@
+from sqlalchemy.orm import Session
+from models import Book, Member
+from uuid import UUID
+from datetime import datetime, timezone
+
+class LibraryRepository:
+    db: Session
+
+    def __init__(self, db: Session):
+        self.db = db
+
+    def create_book(self, new_book: Book):
+        #TODO validation logic
+        self.db.add(new_book)
+        self.db.commit()
+        self.db.refresh(new_book)
+        return new_book
+    
+    def get_book_by_id(self, book_id: int):
+        #TODO check existense
+        book = self.db.query(Book).filter(Book.id == book_id).first()
+        return book
+    
+    def get_all_books(self):
+        return self.db.query(Book).all()
+    
+    def update_book(self, book_id: int, updated_book: Book):
+        #TODO updated_book validation logic
+        book_to_update = self.db.query(Book).filter(Book.id == book_id).first()
+
+        #TODO add existense check
+
+        self.db.merge(updated_book)
+        self.db.commit()
+        self.db.refresh(updated_book)
+        return updated_book
+
+    def delete_book_by_id(self, book_id: int):
+        book_to_delete = self.db.query(Book).filter(Book.id == book_id).first()
+
+        #TODO add existense check
+
+        self.db.delete(book_to_delete)
+        self.db.commit()
+
+    def borrow_book(self, book_id: int, member_id: UUID):
+        book_to_borrow = self.db.query(Book).filter(Book.id == book_id).first()
+        member_to_assign = self.db.query(Member).filter(Member.id == member_id).first()
+
+        #TODO validation logic for both
+
+        book_to_borrow.is_borrowed = True
+        book_to_borrow.borrowed_by = member_id
+        book_to_borrow.borrowed_date = datetime.now(timezone.utc)
+
+        self.db.merge(book_to_borrow)
+        self.db.commit()
+
+    def return_book(self, book_id: int):
+        book_to_return = self.db.query(Book).filter(Book.id == book_id).first()
+
+        #TODO check if is_borrowed
+
+        book_to_return.is_borrowed = False
+        book_to_return.borrowed_date = None
+        book_to_return.borrowed_by = None
+        self.db.merge(book_to_return)
+        self.db.commit()
+
+    #Members
+    def create_member(self, new_member: Member):
+        #TODO validation logic
+        self.db.add(new_member)
+        self.db.commit()
+        self.db.refresh(new_member)
+        return new_member
+    
+    def get_member_by_id(self, member_id: int):
+        #TODO check existense
+        book = self.db.query(Member).filter(Member.id == member_id).first()
+        return book
+    
+    def get_all_member(self):
+        return self.db.query(Member).all()
+    
+    def update_member(self, member_id: UUID, updated_member: Book):
+        #TODO updated_member validation logic
+        member_to_update = self.db.query(Member).filter(Member.id == member_id).first()
+
+        #TODO add existense check
+
+        self.db.merge(updated_member)
+        self.db.commit()
+        self.db.refresh(updated_member)
+        return updated_member
+
+    def delete_book_by_id(self, member_id: UUID):
+        member_to_delete = self.db.query(Member).filter(Member.id == member_id).first()
+
+        #TODO add existense check
+
+        self.db.delete(member_to_delete)
+        self.db.commit()
