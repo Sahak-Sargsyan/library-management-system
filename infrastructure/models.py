@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime
 import uuid
-from infra.database import Base
+from infrastructure.database import Base
 
 class Book(Base):
     __tablename__ = "books"
