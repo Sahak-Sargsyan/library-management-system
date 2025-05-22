@@ -3,6 +3,7 @@ from uuid import UUID
 from infrastructure.models import Member
 from application.schemas import MemberCreate, MemberUpdate
 import uuid
+from shared.exceptions import NotFoundException
 
 class MemberService:
     repository: LibraryRepository
@@ -19,10 +20,23 @@ class MemberService:
         return self.repository.create_member(member_to_add)
     
     def get_member_by_id(self, member_id: UUID):
-        return self.repository.get_member_by_id(member_id)
+        try:
+            member = self.repository.get_member_by_id(member_id)
+            return member
+        except NotFoundException:
+            raise
+        
     
-    def update_member(self, member_id: UUID, updated_member: Member):
-        self.repository.update_member(member_id, updated_member)
+    def update_member(self, member_id: UUID, updated_member: MemberUpdate):
+        try:
+            member_to_update = Member(
+                name = updated_member.name,
+                email = updated_member.email,
+                member_id = member_id
+            )
+            return self.repository.update_member(member_id, member_to_update)
+        except NotFoundException:
+            raise
 
     def delete_member(self, member_id: UUID):
         self.repository.delete_member_by_id(member_id)

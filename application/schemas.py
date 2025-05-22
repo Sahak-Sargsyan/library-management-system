@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import datetime
 from uuid import UUID
@@ -19,7 +19,7 @@ class BookBase(BookUpdate):
 
 class MemberCreate(BaseModel):
     name: str
-    email: str
+    email: EmailStr
 
 class MemberUpdate(MemberCreate):
     pass
