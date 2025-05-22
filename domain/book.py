@@ -2,6 +2,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Optional
 import uuid
+from shared.exceptions import AlreadyBorrowedException
 
 
 class Book:
@@ -21,6 +22,8 @@ class Book:
         self.borrowed_by = None
 
     def borrow_book(self, member: uuid.UUID):
+        if self.is_borrowed:
+            raise AlreadyBorrowedException(f"Book with id: {self.book_id} is already borrowed")
         self.is_borrowed = True
         self.borrowed_date = datetime.now(timezone.utc)
         self.borrowed_by = member

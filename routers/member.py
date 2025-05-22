@@ -5,18 +5,19 @@ from application.member_service import MemberService
 from infrastructure.library_repository import LibraryRepository
 from shared.schemas import MemberCreate, MemberUpdate, MemberBase
 from uuid import UUID
-from shared.exceptions import NotFoundException, AlreadyBorrowedException, InvalidDataException, DuplicateEmailException
+from shared.exceptions import NotFoundException, DuplicateEmailException
+from fastapi_pagination import Page, paginate
 
 router = APIRouter(
     prefix="/members",
     tags=["Members"]
 )
 
-@router.get("/", response_model=list[MemberBase])
+@router.get("/", response_model=Page[MemberBase])
 def get_members(db: Session = Depends(get_db)):
     service = MemberService(LibraryRepository(db))
     members = service.get_members()
-    return members
+    return paginate(members)
 
 @router.get("/{member_id}", response_model=MemberBase)
 def get_member_by_id(member_id: UUID, db: Session = Depends(get_db)):

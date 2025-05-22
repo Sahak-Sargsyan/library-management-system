@@ -11,7 +11,6 @@ class LibraryRepository:
         self.db = db
 
     def create_book(self, new_book: Book):
-        #TODO validation logic
         self.db.add(new_book)
         self.db.commit()
         self.db.refresh(new_book)
@@ -19,7 +18,8 @@ class LibraryRepository:
     
     def get_book_by_id(self, book_id: int):
         book = self.db.query(Book).filter(Book.book_id == book_id).first()
-        if not Book:
+
+        if book is None:
             raise NotFoundException(f"Book with id: {book_id} is not found.")
         
         return book
@@ -28,7 +28,6 @@ class LibraryRepository:
         return self.db.query(Book).all()
     
     def update_book(self, book_id: int, updated_book: Book):
-        #TODO updated_book validation logic
         book_to_update = self.db.query(Book).filter(Book.book_id == book_id).first()
 
         if not book_to_update:
@@ -69,8 +68,6 @@ class LibraryRepository:
     def return_book(self, book_id: int):
         book_to_return = self.db.query(Book).filter(Book.book_id == book_id).first()
 
-        #TODO check if is_borrowed
-
         book_to_return.is_borrowed = False
         book_to_return.borrowed_date = None
         book_to_return.borrowed_by = None
@@ -92,7 +89,7 @@ class LibraryRepository:
     def get_member_by_id(self, member_id: int):
         member = self.db.query(Member).filter(Member.member_id == member_id).first()
 
-        if not member:
+        if member is None:
             raise NotFoundException(f"Member with id: {member_id} is not found.")
         
         return member
