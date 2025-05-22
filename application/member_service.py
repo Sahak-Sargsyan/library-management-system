@@ -4,6 +4,7 @@ from infrastructure.models import Member
 from shared.schemas import MemberCreate, MemberUpdate
 import uuid
 from shared.exceptions import NotFoundException, DuplicateEmailException
+from typing import Optional
 
 class MemberService:
     repository: LibraryRepository
@@ -43,3 +44,7 @@ class MemberService:
 
     def delete_member(self, member_id: UUID):
         self.repository.delete_member_by_id(member_id)
+
+    def get_members_by_parameters(self, name: Optional[str] = None, email: Optional[str] = None):
+        members = self.repository.get_filtered_members(name, email)
+        return members

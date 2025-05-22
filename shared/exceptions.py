@@ -5,7 +5,8 @@ class DuplicateEmailException(Exception):
     pass
 
 class AlreadyBorrowedException(Exception):
-    pass
+    def __init__(self, borrowed_data):
+        self.borrowed_data = borrowed_data
 
 class InvalidDataException(Exception):
     pass

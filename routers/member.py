@@ -7,6 +7,7 @@ from shared.schemas import MemberCreate, MemberUpdate, MemberBase
 from uuid import UUID
 from shared.exceptions import NotFoundException, DuplicateEmailException
 from fastapi_pagination import Page, paginate
+from typing import Optional
 
 router = APIRouter(
     prefix="/members",
@@ -17,6 +18,13 @@ router = APIRouter(
 def get_members(db: Session = Depends(get_db)):
     service = MemberService(LibraryRepository(db))
     members = service.get_members()
+    return paginate(members)
+
+#search logic
+@router.get("/search", response_model=Page[MemberBase])
+def search_members(name: Optional[str] = None, email: Optional[str] = None, db: Session = Depends(get_db)):
+    service = MemberService(LibraryRepository(db))
+    members = service.get_members_by_parameters(name, email)
     return paginate(members)
 
 @router.get("/{member_id}", response_model=MemberBase)

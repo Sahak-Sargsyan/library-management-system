@@ -4,6 +4,7 @@ from infrastructure import models
 from infrastructure.mappers import BookMapper
 from uuid import UUID
 from shared.exceptions import NotFoundException, AlreadyBorrowedException
+from typing import Optional
 
 class BookService:
     repository: LibraryRepository
@@ -66,7 +67,7 @@ class BookService:
                 borrowed_date=book_to_borrow.borrowed_date,
                 borrowed_by=book_to_borrow.borrowed_by
                 )
-            return borrowed_data
+            raise AlreadyBorrowedException(borrowed_data)
 
     def return_book(self, book_id):
         book_to_return = self.repository.get_book_by_id(book_id)
@@ -81,3 +82,6 @@ class BookService:
             )
         return borrowed_data
         
+    def get_books_by_parameters(self, title: Optional[str] = None, author: Optional[str] = None):
+        books = self.repository.get_filtered_books(title, author)
+        return books

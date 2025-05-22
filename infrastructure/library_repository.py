@@ -3,6 +3,7 @@ from infrastructure.models import Book, Member
 from uuid import UUID
 from datetime import datetime, timezone
 from shared.exceptions import NotFoundException, AlreadyBorrowedException, DuplicateEmailException
+from typing import Optional
 
 class LibraryRepository:
     db: Session
@@ -116,3 +117,23 @@ class LibraryRepository:
 
         self.db.delete(member_to_delete)
         self.db.commit()
+
+    def get_filtered_members(self, name: Optional[str] = None, email: Optional[str] = None):
+        members_query = self.db.query(Member)
+
+        if name is not None:
+            members_query = members_query.filter(Member.name == name)
+        if email is not None:
+            members_query = members_query.filter(Member.email == email)
+        
+        return members_query.all()
+    
+    def get_filtered_books(self, title: Optional[str] = None, author: Optional[str] = None):
+        books_query = self.db.query(Book)
+
+        if title is not None:
+            books_query = books_query.filter(Book.title == title)
+        if author is not None:
+            books_query = books_query.filter(Book.author == author)
+
+        return books_query.all()

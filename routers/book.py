@@ -1,12 +1,14 @@
 from fastapi import APIRouter, Depends, status, Response, HTTPException
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from shared.schemas import BookBase, BookCreate, BookUpdate, BorrowedData
 from infrastructure.database import get_db
 from application.book_service import BookService
 from infrastructure.library_repository import LibraryRepository
 from uuid import UUID
-from shared.exceptions import NotFoundException
-from fastapi_pagination import Page, paginate, add_pagination
+from shared.exceptions import NotFoundException, AlreadyBorrowedException
+from fastapi_pagination import Page, paginate
+from typing import Optional
 
 router = APIRouter(
     prefix="/books",
@@ -17,6 +19,13 @@ router = APIRouter(
 def get_books(db: Session = Depends(get_db)):
     service = BookService(LibraryRepository(db))
     books = service.get_all_books()
+    return paginate(books)
+
+#search logic
+@router.get("/search", response_model=Page[BookBase])
+def search_books(title: Optional[str] = None, author: Optional[str] = None, db: Session = Depends(get_db)):
+    service = BookService(LibraryRepository(db))
+    books = service.get_books_by_parameters(title, author)
     return paginate(books)
 
 @router.get("/{book_id}", response_model=BookBase)
@@ -58,6 +67,11 @@ def borrow_book(book_id: int, member_id: UUID, db: Session = Depends(get_db)):
         return data
     except NotFoundException as ex:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(ex))
+    except AlreadyBorrowedException as ex:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=jsonable_encoder(ex.borrowed_data)
+        )
 
 @router.post("/return/{book_id}", response_model=BorrowedData)
 def return_book(book_id: int, db: Session = Depends(get_db)):
