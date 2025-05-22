@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from infrastructure.models import Book, Member
 from uuid import UUID
 from datetime import datetime, timezone
-from shared.exceptions import NotFoundException, AlreadyBorrowedException
+from shared.exceptions import NotFoundException, AlreadyBorrowedException, DuplicateEmailException
 
 class LibraryRepository:
     db: Session
@@ -79,7 +79,11 @@ class LibraryRepository:
 
     #Members
     def create_member(self, new_member: Member):
-        #TODO validation logic
+        member = self.db.query(Member).filter(Member.email == new_member.email).first()
+
+        if member is not None:
+            raise DuplicateEmailException(f"Member with email: {new_member.email} exists.")
+        
         self.db.add(new_member)
         self.db.commit()
         self.db.refresh(new_member)
@@ -97,7 +101,6 @@ class LibraryRepository:
         return self.db.query(Member).all()
     
     def update_member(self, member_id: UUID, updated_member: Book):
-        #TODO updated_member validation logic
         member_to_update = self.db.query(Member).filter(Member.member_id == member_id).first()
 
         if not member_to_update:

@@ -3,7 +3,7 @@ from uuid import UUID
 from infrastructure.models import Member
 from application.schemas import MemberCreate, MemberUpdate
 import uuid
-from shared.exceptions import NotFoundException
+from shared.exceptions import NotFoundException, DuplicateEmailException
 
 class MemberService:
     repository: LibraryRepository
@@ -15,9 +15,12 @@ class MemberService:
         return self.repository.get_all_members()
     
     def create_member(self, new_member: MemberCreate):
-        member_to_add = Member(name = new_member.name, email = new_member.email)
-        member_to_add.member_id = uuid.uuid4()
-        return self.repository.create_member(member_to_add)
+        try:
+            member_to_add = Member(name = new_member.name, email = new_member.email)
+            member_to_add.member_id = uuid.uuid4()
+            return self.repository.create_member(member_to_add)
+        except DuplicateEmailException:
+            raise
     
     def get_member_by_id(self, member_id: UUID):
         try:

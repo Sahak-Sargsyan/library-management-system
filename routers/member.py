@@ -29,9 +29,12 @@ def get_member_by_id(member_id: UUID, db: Session = Depends(get_db)):
     
 @router.post("/", response_model=MemberBase)
 def create_member(new_member: MemberCreate, db: Session = Depends(get_db)):
-    service = MemberService(LibraryRepository(db))
-    new_member = service.create_member(new_member)
-    return new_member
+    try:
+        service = MemberService(LibraryRepository(db))
+        new_member = service.create_member(new_member)
+        return new_member
+    except DuplicateEmailException as ex:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(ex))
 
 @router.delete("/{member_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_member(member_id: UUID, db: Session = Depends(get_db)):
