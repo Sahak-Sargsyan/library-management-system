@@ -36,8 +36,8 @@ class LibraryRepository:
 
         self.db.merge(updated_book)
         self.db.commit()
-        self.db.refresh(updated_book)
-        return updated_book
+        self.db.refresh(book_to_update)
+        return book_to_update
 
     def delete_book_by_id(self, book_id: int):
         book_to_delete = self.db.query(Book).filter(Book.book_id == book_id).first()

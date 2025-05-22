@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from infrastructure.database import get_db
 from application.member_service import MemberService
 from infrastructure.library_repository import LibraryRepository
-from application.schemas import MemberCreate, MemberUpdate, MemberBase
+from shared.schemas import MemberCreate, MemberUpdate, MemberBase
 from uuid import UUID
 from shared.exceptions import NotFoundException, AlreadyBorrowedException, InvalidDataException, DuplicateEmailException
 

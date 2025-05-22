@@ -1,7 +1,7 @@
 from infrastructure.library_repository import LibraryRepository
 from uuid import UUID
 from infrastructure.models import Member
-from application.schemas import MemberCreate, MemberUpdate
+from shared.schemas import MemberCreate, MemberUpdate
 import uuid
 from shared.exceptions import NotFoundException, DuplicateEmailException
 

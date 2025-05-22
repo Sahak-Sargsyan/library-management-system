@@ -1,7 +1,8 @@
+from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Optional
 import uuid
-from __future__ import annotations
+
 
 class Book:
     book_id: Optional[int] = None
@@ -11,8 +12,8 @@ class Book:
     borrowed_date: Optional[datetime] = None
     borrowed_by: Optional[uuid.UUID] = None
 
-    def __init__(self, title, author, id: Optional[int] = None):
-        self.book_id = id
+    def __init__(self, title, author, book_id: Optional[int] = None):
+        self.book_id = book_id
         self.title = title
         self.author = author
         self.is_borrowed = False
