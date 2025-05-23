@@ -58,92 +58,80 @@ library-management-system/
 
 ##  Setup & Installation
 
-### 1. Clone the repository
+### 🔧 Option 1: Run with Docker (Recommended)
 
+#### 1. Clone the repository
 ```bash
 git clone https://github.com/yourusername/library-management-system.git
 cd library-management-system
 ```
 
-### 2. Create and activate a virtual environment
+#### 2. Run the app and database
+```bash
+docker compose up --build
+```
 
+#### 3. Access the API Docs
+- Swagger UI: [http://localhost:8000/docs](http://localhost:8000/docs)
+- ReDoc: [http://localhost:8000/redoc](http://localhost:8000/redoc)
+
+> The app will automatically run Alembic migrations and start FastAPI.
+
+#### 4. Stopping the App
+```bash
+docker compose down
+```
+
+To also wipe the Postgres data:
+```bash
+docker compose down -v
+```
+
+---
+
+### 🧪 Option 2: Run Locally with Virtual Environment
+
+#### 1. Clone the repository
+```bash
+git clone https://github.com/yourusername/library-management-system.git
+cd library-management-system
+```
+
+#### 2. Create a virtual environment and activate it
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-### 3. Install dependencies
-
+#### 3. Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Set up PostgreSQL
-
-**a. Start PostgreSQL**  
-Make sure PostgreSQL is running on your machine.
-
-**b. Create a new database and user**
-
+#### 4. Set up PostgreSQL manually
+Create a database:
 ```bash
-# Enter the PostgreSQL shell (you may need to use 'sudo -u postgres psql' on some systems)
 psql -U postgres
 
-# In the psql shell, run:
+# inside psql
 CREATE DATABASE library_db;
-CREATE USER library_user WITH PASSWORD 'yourpassword';
+CREATE USER library_user WITH PASSWORD 'postgres';
 GRANT ALL PRIVILEGES ON DATABASE library_db TO library_user;
 \q
 ```
 
-**c. Configure the database URL in your code**
+### 5. Update `.env` with local database URL
+If you're running the app locally (without Docker), update your `.env` file to point to your local PostgreSQL instance:
 
-Open `infrastructure/database.py` and set the connection string directly, for example:
-
-```python
-# filepath: infrastructure/database.py
-
-DATABASE_URL = "postgresql+psycopg2://library_user:yourpassword@localhost:5432/library_db"
-
-engine = create_engine(DATABASE_URL)
-# ...existing code...
+#### 6. Run Alembic migrations
+```bash
+alembic upgrade head
 ```
 
-Make sure to replace `yourpassword` with the password you set above.
-
-### 5. Run Alembic migrations
-
-The project includes an `migrations/` folder with migration scripts.
-
-1. Open `alembic.ini` and set the `sqlalchemy.url` to match your `DATABASE_URL`:
-
-    ```
-    sqlalchemy.url = postgresql+psycopg2://library_user:yourpassword@localhost:5432/library_db
-    ```
-
-2. Run the migrations:
-
-    ```bash
-    alembic upgrade head
-    ```
-
-### 6. Start the application
-
+#### 7. Start FastAPI
 ```bash
 uvicorn main:app --reload
 ```
-
-### 7. Access the API docs
-
-- Swagger UI: [http://localhost:8000/docs](http://localhost:8000/docs)
-- ReDoc: [http://localhost:8000/redoc](http://localhost:8000/redoc)
-
----
-
-**Troubleshooting tips:**
-- If you change your models, create a new migration with `alembic revision --autogenerate -m "Describe changes"`, then run `alembic upgrade head`.
-- If you get connection errors, double-check your database credentials and that PostgreSQL is running.
-- All configuration is set directly in the code and `alembic.ini`—no environment variables are required.
 
 ---
 
